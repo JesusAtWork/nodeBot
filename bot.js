@@ -7,20 +7,8 @@ const colors = require("colors");
 const readline = require('readline-sync');
 const translate = require('google-translate-api');
 const io = require("socket.io")(server);
+const weather = require("weather-js");
 
-/*const mysql = require("mysql");
-
-var con = mysql.createConnection({
-	host: "localhost",
-	user: "root",
-	password: "",
-	database:"chatbots"
-});
-con.connect(function(err) {
-	if (err) throw err;
-	console.log("Connected to DB")
-});
-*/
 app.use(morgan('dev'));
 app.use(bodyParser.json())
 
@@ -52,19 +40,14 @@ var me = {
     name:''
 }
 
-var loop = 0;
+console.log("Hola soy "+bot.name.green+" en que te puedo ayudar")
 
-while(true){
-    if(loop==0){
-        console.log("Hola soy "+bot.name.green+" en que te puedo ayudar")
-    }else if(loop>0){
-        console.log("Que mas quieres?")
-    }
+function query(query){
 
-    var query = readline.question("> ");
-    query.toLowerCase();
+  query = readline.question("> ");
+  query.toLowerCase();
 
-    switch (query) {
+/*    switch (query) {
         case 'hola':
                me.name = readline.question('Como te llamas? ');
                console.log('Hola '+me.name);
@@ -75,46 +58,70 @@ while(true){
         default:
             //console.log('No entiendo lo que estas diciendo'.green)
             break;
-    }
+    }*/
 
-    var math = query.includes('cuanto es ');
-    var definition = query.includes('que es ');
-    var trans = query.includes('en: ');
-
-    if(math){
-        //console.log('Estas preguntando algo de mates'.green);
-        let inp = query.substring(10);
-        console.log(colors.blue(inp)+" es igual a ".green+colors.blue(eval(inp)));
+  var math = query.includes('cuanto es ');
+  var definition = query.includes('que es ');
+  var trans = query.includes('en: ');
+  var clima = query.includes('tiempo');
+  
+  if(math){
+    var result = strToMath(query);
+    console.log(colors.blue(query)+" es igual a ".green+colors.blue(result));
+  }
+  if(trans){
+    var translatestr = query.substring(4);
+  
+    translate(translatestr, {to: 'en'}).then(res => {
+          console.log(res.text);
+      }).catch(err => {
+          console.error('ERROR: '+err);
+      });
+  }
+  if(clima){
+    getWeather(query);
+  }
+  if(definition){console.log('Estas preguntando acerca de una definicion'.green);}
+}
+function getWeather(query){
+    var translatestr = query.substring(6);
+    weather.find({
+      search:'Requegua,sexta region',
+      degreeType:'C'
+    },
+    function(err,result){
+      if(err) console.log(err);
+      console.log(JSON.stringify(result,null,2));
+      var current = result[1].current;
+      
+      if(current.skytext=='Sunny'){
+        current.skytext='Soleado'.green;
+      }
+      else if(current.skytext=='Clear'){
+        current.skytext='Despejado'.yellow;
+      }
+      console.log(
+        'Temperatura actual: '+
+        current.temperature.green+'ºC '.green+' '+
+        current.skytext
+      );
     }
-    if(definition){
-        console.log('Estas preguntando acerca de una definicion'.green);
-    }
-    if(trans){
-        let inp = query.substring(10);
-        translate(inp, {to: 'en'}).then(res => {
-            console.log(res.text.green);
-        }).catch(err => {
-            console.error(err);
-        });
-    }
-
-    loop++;
+  )
+}
+function strToMath(query){
+  //console.log('Estas preguntando algo de mates'.green);
+  var mathStr = query.substring(10);
+  return eval(mathStr);
+}
+function strToTranslate(query){
+  var translateStr = query.substring(4);
+  
+  translate(translateStr, {to: 'en'}).then(res => {
+      return res.text;
+  }).catch(err => {
+      console.error(err);
+      return 'ERROR: '+err;
+  });
 }
 
-//app.set("view engine", "ejs");
-/*
-app.get("/", function(req, res) {
-	con.query("SELECT * FROM chatbots", function (err, rows) {
-		res.render("index",{bots:rows});       
-	});
-});
-
-con.query("SELECT * FROM chatbots", function (err, rows) {
-	rows.forEach(bot => {
-		app.get("/"+bot.name, function(req, res) {
-			con.query("SELECT * FROM chatbots WHERE name='"+bot.name+"' ", function (err, rows) {
-				res.render("chatbot",{bot:rows[0]});       
-			});
-		});
-	});
-});*/
+query();
