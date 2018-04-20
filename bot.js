@@ -93,17 +93,78 @@ function getWeather(query){
       if(err) console.log(err);
       console.log(JSON.stringify(result,null,2));
       var current = result[1].current;
-      
+      var tomorrow = result[1].forecast[2];
+      var tomorrow2 = result[1].forecast[3];
+
       if(current.skytext=='Sunny'){
         current.skytext='Soleado'.green;
       }
       else if(current.skytext=='Clear'){
         current.skytext='Despejado'.yellow;
       }
+      
+      if(tomorrow.skytextday=='Sunny'){
+        tomorrow.skytextday='Soleado'.green;
+      }
+      else if(tomorrow.skytextday=='Clear'){
+        tomorrow.skytextday='Despejado'.yellow;
+      }
+      
+      if(tomorrow2.skytextday=='Sunny'){
+        tomorrow2.skytextday='Soleado'.green;
+      }
+      else if(tomorrow2.skytextday=='Clear'){
+        tomorrow2.skytextday='Despejado'.yellow;
+      }
+    
+      if(tomorrow.low<=12){
+        tomorrow.low=tomorrow.low.red+'ºC'.red;
+      }else if(tomorrow.low<12 && tomorrow.low>20){
+        tomorrow.low=tomorrow.low.yellow+'ºC'.yellow;
+      }else if(tomorrow.low>20){
+        tomorrow.low=tomorrow.low.green+'ºC'.green;
+      }
+      
+      if(tomorrow.high<=12){
+        tomorrow.high=tomorrow.high.red+'ºC'.red;
+      }else if(tomorrow.high<12 && tomorrow.high>20){
+        tomorrow.high=tomorrow.high.yellow+'ºC'.yellow;
+      }else if(tomorrow.high>20){
+        tomorrow.high=tomorrow.high.green+'ºC'.green;
+      }
+      
+      if(tomorrow2.low<=12){
+        tomorrow2.low=tomorrow2.low.red+'ºC'.red;
+      }else if(tomorrow2.low<12 && tomorrow2.low>20){
+        tomorrow2.low=tomorrow2.low.yellow+'ºC'.yellow;
+      }else if(tomorrow2.low>20){
+        tomorrow2.low=tomorrow2.low.green+'ºC'.green;
+      }
+      
+      if(tomorrow2.high<=12){
+        tomorrow2.high=tomorrow2.high.red+'ºC'.red;
+      }else if(tomorrow2.high<12 && tomorrow2.high>20){
+        tomorrow2.high=tomorrow2.high.yellow+'ºC'.yellow;
+      }else if(tomorrow2.high>20){
+        tomorrow2.high=tomorrow2.high.green+'ºC'.green;
+      }
+      
       console.log(
         'Temperatura actual: '+
         current.temperature.green+'ºC '.green+' '+
         current.skytext
+      );
+      console.log("---".yellow+tomorrow.day.yellow+"---".yellow);
+      console.log(
+        'Minima: '+tomorrow.low+' '+
+        'Maxima: '+tomorrow.high+' '+
+        tomorrow.skytextday
+      );
+      console.log("---".yellow+tomorrow2.day.yellow+"---".yellow);
+      console.log(
+        'Minima: '+tomorrow2.low+' '+
+        'Maxima: '+tomorrow2.high+' '+
+        tomorrow2.skytextday
       );
     }
   )
