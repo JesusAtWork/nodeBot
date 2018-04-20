@@ -67,7 +67,7 @@ function query(query){
   
   if(math){
     var result = strToMath(query);
-    console.log(colors.blue(query)+" es igual a ".green+colors.blue(result));
+    console.log(colors.blue(query.substring(10))+" es igual a ".green+colors.blue(result));
   }
   if(trans){
     var translatestr = query.substring(4);
@@ -91,7 +91,7 @@ function getWeather(query){
     },
     function(err,result){
       if(err) console.log(err);
-      console.log(JSON.stringify(result,null,2));
+      //console.log(JSON.stringify(result,null,2));
       var current = result[1].current;
       var tomorrow = result[1].forecast[2];
       var tomorrow2 = result[1].forecast[3];
@@ -150,7 +150,7 @@ function getWeather(query){
       }
       
       console.log(
-        'Temperatura actual: '+
+        'Temperatura Actual: '+
         current.temperature.green+'ºC '.green+' '+
         current.skytext
       );
